@@ -523,16 +523,50 @@
             menuMobile.classList.toggle('hidden');
         });
 
-        // SweetAlert2 no envio do formulário (apenas front-end; integrar depois com backend/Email)
+        // Envio do formulário: abrir WhatsApp + cliente de e-mail com os dados
         const formContato = document.getElementById('form-contato');
         formContato.addEventListener('submit', function (e) {
             e.preventDefault();
 
             const nome = document.getElementById('nome').value || 'Cliente';
+            const email = document.getElementById('email').value || '';
+            const telefone = document.getElementById('telefone').value || '';
+            const tipo = document.getElementById('tipo').value || 'Não informado';
+            const mensagem = document.getElementById('mensagem').value || '';
+
+            const textoBase =
+                'Solicitação de orçamento pelo site do Eng. Eletricista Jefas Rocha:%0A%0A' +
+                'Nome: ' + encodeURIComponent(nome) + '%0A' +
+                'E-mail: ' + encodeURIComponent(email) + '%0A' +
+                'Telefone/WhatsApp: ' + encodeURIComponent(telefone) + '%0A' +
+                'Tipo de serviço: ' + encodeURIComponent(tipo) + '%0A%0A' +
+                'Mensagem:%0A' + encodeURIComponent(mensagem);
+
+            // 1) Abrir WhatsApp com mensagem pronta
+            const whatsUrl = 'https://api.whatsapp.com/send?phone=5592994384555&text=' + textoBase;
+            window.open(whatsUrl, '_blank');
+
+            // 2) Abrir cliente de e-mail padrão com os mesmos dados
+            const corpoEmail =
+                'Solicitação de orçamento pelo site do Eng. Eletricista Jefas Rocha:\n\n' +
+                'Nome: ' + nome + '\n' +
+                'E-mail: ' + email + '\n' +
+                'Telefone/WhatsApp: ' + telefone + '\n' +
+                'Tipo de serviço: ' + tipo + '\n\n' +
+                'Mensagem:\n' + mensagem;
+
+            const mailtoUrl =
+                'mailto:jefas.rocha@gmail.com' +
+                '?subject=' + encodeURIComponent('Solicitação de orçamento - site') +
+                '&body=' + encodeURIComponent(corpoEmail);
+
+            window.location.href = mailtoUrl;
+
+            // Alerta de confirmação
             Swal.fire({
                 icon: 'success',
-                title: 'Mensagem enviada!',
-                html: 'Obrigado, <strong>' + nome + '</strong>. Sua solicitação foi registrada. Em breve o Eng. Jefas retornará pelo e-mail ou WhatsApp informado.',
+                title: 'Quase lá!',
+                html: 'Abrimos o <strong>WhatsApp</strong> e o seu <strong>cliente de e-mail</strong> com a mensagem preenchida. Basta confirmar o envio.',
                 confirmButtonColor: '#0369a1'
             });
 
@@ -550,6 +584,7 @@
 
         document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
     </script>
+
 </body>
 
 </html>
